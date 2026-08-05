@@ -1,128 +1,124 @@
-export type MealCategory = "Chicken" | "Beef" | "Pork" | "Vegetarian" | "Fish";
+export type MealCategory = "Mains" | "Soups";
+
+export interface SideOption {
+  id: string;
+  name: string;
+  upcharge: number;
+}
+
+export interface SaladOption {
+  id: string;
+  name: string;
+}
 
 export interface Meal {
   id: string;
   name: string;
   description: string;
   price: number;
-  calories: number;
   category: MealCategory;
   image: string;
+  requiresSides?: boolean;
+  requiresSalad?: boolean;
   tags?: string[];
   chefsPick?: boolean;
   featured?: boolean;
 }
 
+export const sides: SideOption[] = [
+  { id: "basmati-rice", name: "Basmati Rice", upcharge: 0 },
+  { id: "potato-wedges", name: "Potato Wedges", upcharge: 0 },
+  { id: "boiled-potatoes", name: "Boiled Potatoes", upcharge: 0 },
+  { id: "mashed-potatoes", name: "Mashed Potatoes", upcharge: 3 },
+];
+
+export const salads: SaladOption[] = [
+  { id: "vitamin-salad", name: "Vitamin Salad" },
+  { id: "beetroot-salad", name: "Beetroot Salad" },
+];
+
+export const DEFAULT_SIDE_ID = "basmati-rice";
+export const DEFAULT_SALAD_ID = "vitamin-salad";
+
 export const meals: Meal[] = [
   {
     id: "lula-kebab",
     name: "Lula Kebab",
-    description: "Char-grilled minced beef skewers with herbs, sumac onions and warm flatbread.",
-    price: 9.5,
-    calories: 640,
-    category: "Beef",
+    description:
+      "Char-grilled minced beef skewers with sumac onions and fresh herbs. Served with your choice of side and salad.",
+    price: 6,
+    category: "Mains",
     image:
       "https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&q=80&auto=format&fit=crop",
+    requiresSides: true,
+    requiresSalad: true,
     tags: ["Grill", "Popular"],
     chefsPick: true,
     featured: true,
   },
   {
-    id: "chicken-schnitzel",
-    name: "Chicken Schnitzel",
-    description: "Golden panko-crusted chicken breast with lemon and rocket salad.",
-    price: 8.9,
-    calories: 720,
-    category: "Chicken",
+    id: "chicken-shashlik",
+    name: "Chicken Shashlik",
+    description:
+      "Tender marinated chicken thigh skewers, flame-kissed and juicy. Comes with a side and a salad.",
+    price: 6,
+    category: "Mains",
     image:
-      "https://images.unsplash.com/photo-1562967914-608f82629710?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Comfort"],
+      "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=1000&q=80&auto=format&fit=crop",
+    requiresSides: true,
+    requiresSalad: true,
+    tags: ["Grill"],
     featured: true,
   },
   {
-    id: "chicken-shashlik",
-    name: "Chicken Shashlik",
-    description: "Marinated chicken thigh skewers, roasted peppers and garlic yogurt.",
-    price: 9.2,
-    calories: 580,
-    category: "Chicken",
+    id: "meatloaf",
+    name: "Meatloaf",
+    description:
+      "Homestyle meatloaf, slow-baked with sweet onion and herbs. Comforting, wholesome, filling.",
+    price: 6,
+    category: "Mains",
     image:
-      "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Grill"],
-  },
-  {
-    id: "pork-shashlik",
-    name: "Pork Shashlik",
-    description: "Tender pork neck skewers with roasted potatoes and pickled onions.",
-    price: 9.4,
-    calories: 690,
-    category: "Pork",
-    image:
-      "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Grill"],
+      "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=1000&q=80&auto=format&fit=crop",
+    requiresSides: true,
+    requiresSalad: true,
+    tags: ["Comfort"],
   },
   {
     id: "caesar-chicken",
     name: "Caesar with Chicken",
-    description: "Crisp romaine, grilled chicken, shaved parmesan and sourdough croutons.",
-    price: 8.5,
-    calories: 480,
-    category: "Chicken",
+    description:
+      "Crisp romaine, grilled chicken, shaved parmesan, croutons and lemony Caesar dressing.",
+    price: 8,
+    category: "Mains",
     image:
       "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=1000&q=80&auto=format&fit=crop",
+    requiresSides: true,
+    requiresSalad: true,
     tags: ["Light"],
-  },
-  {
-    id: "kodused-kotletid",
-    name: "Kodused Kotletid",
-    description: "Estonian home-style meatballs with mashed potato and dill gravy.",
-    price: 7.9,
-    calories: 610,
-    category: "Beef",
-    image:
-      "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Comfort", "Local"],
     featured: true,
   },
   {
-    id: "roasted-veg-bowl",
-    name: "Roasted Veg Bowl",
-    description: "Miso-glazed pumpkin, quinoa, chickpeas, tahini and pomegranate.",
-    price: 6.0,
-    calories: 520,
-    category: "Vegetarian",
+    id: "chicken-soup",
+    name: "Chicken Soup",
+    description:
+      "Clear golden broth, hand-pulled chicken, noodles, carrots and dill. The classic pick-me-up.",
+    price: 3.5,
+    category: "Soups",
     image:
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Plant-based"],
+      "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=1000&q=80&auto=format&fit=crop",
+    tags: ["Warming"],
   },
   {
-    id: "baked-salmon",
-    name: "Baked Salmon",
-    description: "Herb-crusted salmon fillet with lemon butter and green beans.",
-    price: 10.9,
-    calories: 560,
-    category: "Fish",
+    id: "solyanka",
+    name: "Solyanka",
+    description:
+      "Rich, tangy meat soup with pickles, olives, capers and a squeeze of lemon. A Caucasian classic.",
+    price: 3.5,
+    category: "Soups",
     image:
-      "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Omega-3"],
-  },
-  {
-    id: "mushroom-risotto",
-    name: "Mushroom Risotto",
-    description: "Slow-cooked arborio rice with wild mushrooms, thyme and parmesan.",
-    price: 7.5,
-    calories: 610,
-    category: "Vegetarian",
-    image:
-      "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Comfort"],
+      "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1000&q=80&auto=format&fit=crop",
+    tags: ["Bold", "Local"],
   },
 ];
 
-export const categories: Array<"All" | MealCategory> = [
-  "All",
-  "Chicken",
-  "Beef",
-  "Vegetarian",
-  "Fish",
-];
+export const categories: Array<"All" | MealCategory> = ["All", "Mains", "Soups"];

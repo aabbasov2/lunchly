@@ -19,10 +19,10 @@ interface CompanyContextValue {
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
 
-const STORAGE_KEY = "lunchly:company";
+const STORAGE_KEY = "fizuli:company";
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
-  const [companyId, setCompanyId] = useState<string | null>("bolt");
+  const [companyId, setCompanyId] = useState<string | null>("krulli-y");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {

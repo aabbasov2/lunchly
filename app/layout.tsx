@@ -21,8 +21,13 @@ const display = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Lunchly — Fresh Lunch Delivered To Your Workplace",
-  description: "Order today. Enjoy tomorrow. Fresh meals delivered to partner offices.",
+  title: "Fizuli Lunch Delivery — Homestyle Caucasian Lunches, Delivered",
+  description:
+    "Char-grilled skewers, comforting mains and soulful soups delivered to your desk. Pick your combo, we do the rest.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {

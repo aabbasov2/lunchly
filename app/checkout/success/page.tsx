@@ -86,14 +86,14 @@ export default function SuccessPage() {
         transition={{ delay: 0.75 }}
         className="mt-8 flex w-full flex-col gap-3"
       >
-        <Link href="/rewards">
+        <Link href="/menu">
           <Button fullWidth size="lg">
-            View your rewards
+            Order for another day
           </Button>
         </Link>
-        <Link href="/menu">
+        <Link href="/">
           <Button fullWidth size="lg" variant="secondary">
-            Order for another day
+            Back to home
           </Button>
         </Link>
       </motion.div>

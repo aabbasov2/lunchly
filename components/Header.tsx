@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { UtensilsCrossed } from "lucide-react";
+import Image from "next/image";
 import { ThemeToggle } from "./ThemeToggle";
 import { useCompany } from "@/context/CompanyContext";
 
@@ -10,13 +10,23 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-black/5 bg-cream/80 backdrop-blur-lg dark:border-white/[0.06] dark:bg-surface-dark/80">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-ink text-cream dark:bg-cream dark:text-ink">
-            <UtensilsCrossed className="h-4 w-4" />
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
+            src="/logo.svg"
+            alt="Fizuli Lunch Delivery logo"
+            width={32}
+            height={32}
+            priority
+            className="rounded-xl shadow-soft"
+          />
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-lg font-semibold tracking-tight text-ink dark:text-cream">
+              Fizuli
+            </span>
+            <span className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-muted dark:text-cream/60">
+              Lunch Delivery
+            </span>
           </div>
-          <span className="font-display text-lg font-semibold tracking-tight text-ink dark:text-cream">
-            Lunchly
-          </span>
         </Link>
         <div className="flex items-center gap-2">
           {companyName && (

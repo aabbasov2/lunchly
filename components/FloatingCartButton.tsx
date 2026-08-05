@@ -20,7 +20,7 @@ export function FloatingCartButton() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed inset-x-0 bottom-[76px] z-30 mx-auto flex max-w-md justify-center px-4 pb-[env(safe-area-inset-bottom)] md:bottom-6"
+          className="fixed inset-x-0 bottom-[76px] z-30 mx-auto flex max-w-md justify-center px-4 pb-[env(safe-area-inset-bottom)] md:hidden"
         >
           <Link
             href="/cart"

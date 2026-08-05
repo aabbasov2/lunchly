@@ -27,10 +27,7 @@ export default function MenuPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return meals.filter((m) => {
-      const catMatch =
-        category === "All" ||
-        m.category === category ||
-        (category === "Vegetarian" && m.category === "Vegetarian");
+      const catMatch = category === "All" || m.category === category;
       if (!catMatch) return false;
       if (!q) return true;
       return (
@@ -45,10 +42,10 @@ export default function MenuPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-4xl tracking-tight text-ink dark:text-cream">
-          Tomorrow&rsquo;s menu
+          Today&rsquo;s kitchen
         </h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-          Choose today, we&rsquo;ll cook it fresh tomorrow.
+          Pick a main, choose a side and salad. We&rsquo;ll take it from there.
         </p>
       </div>
 
@@ -114,10 +111,10 @@ export default function MenuPage() {
                 </p>
                 <div className="mt-4 flex items-center gap-3">
                   <span className="text-lg font-semibold text-ink dark:text-cream">
-                    €{chefsPick.price.toFixed(2)}
+                    From €{chefsPick.price.toFixed(2)}
                   </span>
-                  <span className="text-xs text-ink-muted dark:text-cream/60">
-                    {chefsPick.calories} kcal
+                  <span className="text-xs uppercase tracking-wider text-ink-muted dark:text-cream/60">
+                    Combo · pick a side &amp; salad
                   </span>
                 </div>
               </div>

@@ -12,18 +12,18 @@ import { meals } from "@/data/meals";
 const features = [
   {
     icon: UtensilsCrossed,
-    title: "Fresh meals daily",
-    body: "Prepared each morning by our chefs using seasonal, local ingredients.",
+    title: "Charcoal-grilled daily",
+    body: "Skewers off the mangal, meatloaf out of the oven — cooked the morning of delivery.",
   },
   {
     icon: Truck,
     title: "Free delivery",
-    body: "Every order, every day. Delivered straight to your workplace.",
+    body: "Every order, every day. Delivered straight to your workplace, no surcharge.",
   },
   {
     icon: Building2,
-    title: "Partner companies",
-    body: "Delivered to select offices in Tallinn — with more joining every week.",
+    title: "One-tap combos",
+    body: "Pick your main, tap a side, tap a salad. Ordering is genuinely that fast.",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function Home() {
             >
               <Badge tone="sage" className="mb-4">
                 <Sparkles className="h-3 w-3" />
-                Meals from €6
+                Combos from €6
               </Badge>
             </motion.div>
             <motion.h1
@@ -56,9 +56,9 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.05 }}
               className="font-display text-[2.5rem] leading-[1.05] tracking-tight text-ink sm:text-6xl dark:text-cream"
             >
-              Fresh lunch,
+              Homestyle lunch,
               <br />
-              <span className="italic text-sage-500">delivered</span> to your workplace.
+              <span className="italic text-saffron-500">off the mangal</span>, to your desk.
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
@@ -66,7 +66,8 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-4 max-w-md text-base text-ink-muted sm:text-lg dark:text-cream/70"
             >
-              Order today. Enjoy tomorrow. A calmer lunch break, straight to your desk.
+              Pick a main, choose a side and a salad — Fizuli sends grill-fresh Caucasian
+              lunches straight to your workplace.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -133,10 +134,10 @@ export default function Home() {
         <div className="mb-6 flex items-end justify-between">
           <div>
             <h2 className="font-display text-3xl tracking-tight text-ink dark:text-cream">
-              Why teams love Lunchly
+              Why teams love Fizuli
             </h2>
             <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-              Thoughtful details from kitchen to desk.
+              Real food, real fast — from the grill to your desk.
             </p>
           </div>
         </div>
@@ -169,10 +170,10 @@ export default function Home() {
         <div className="mb-6 flex items-end justify-between">
           <div>
             <h2 className="font-display text-3xl tracking-tight text-ink dark:text-cream">
-              Tomorrow&rsquo;s menu, a preview
+              What&rsquo;s on the grill
             </h2>
             <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-              A taste of what&rsquo;s cooking.
+              A taste of what&rsquo;s cooking today.
             </p>
           </div>
           <Link
@@ -219,18 +220,18 @@ export default function Home() {
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           <div>
             <h2 className="font-display text-4xl tracking-tight sm:text-5xl">
-              Lunch, on a schedule that <span className="italic text-sage-300">works</span>.
+              Lunch that actually <span className="italic text-sage-300">tastes</span> like something.
             </h2>
             <p className="mt-3 text-cream/70">
-              Order the day before, delivered the next day between 11:30 and 13:00. No queues,
-              no decisions at 12:15, no cold sandwiches.
+              Order in the morning, delivered between 11:30 and 13:00. Real skewers, real
+              broths, real herbs. No queues, no cold sandwiches, no compromises.
             </p>
           </div>
           <div className="grid gap-3 rounded-3xl bg-white/[0.05] p-6 backdrop-blur">
             {[
               "Free delivery on every order",
-              "Meals from €6",
-              "Orders close daily at 18:00",
+              "Mains from €6, combos included",
+              "Warming soups at €3.50",
               "Delivered to your workplace",
             ].map((item) => (
               <div key={item} className="flex items-center gap-3 text-sm">
