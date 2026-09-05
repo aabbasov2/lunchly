@@ -1,4 +1,4 @@
-export type MealCategory = "Mains" | "Soups";
+export type MealCategory = "Mains";
 
 export interface SideOption {
   id: string;
@@ -28,8 +28,6 @@ export interface Meal {
 export const sides: SideOption[] = [
   { id: "basmati-rice", name: "Basmati Rice", upcharge: 0 },
   { id: "potato-wedges", name: "Potato Wedges", upcharge: 0 },
-  { id: "boiled-potatoes", name: "Boiled Potatoes", upcharge: 0 },
-  { id: "mashed-potatoes", name: "Mashed Potatoes", upcharge: 3 },
 ];
 
 export const salads: SaladOption[] = [
@@ -42,14 +40,13 @@ export const DEFAULT_SALAD_ID = "vitamin-salad";
 
 export const meals: Meal[] = [
   {
-    id: "lula-kebab",
-    name: "Lula Kebab",
+    id: "kana-shashlyk",
+    name: "Kana Šašlõkk",
     description:
-      "Char-grilled minced beef skewers with sumac onions and fresh herbs. Served with your choice of side and salad.",
-    price: 6,
+      "Marinated chicken thigh skewers, flame-kissed and juicy. Served with your choice of side and salad.",
+    price: 6.9,
     category: "Mains",
-    image:
-      "https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&q=80&auto=format&fit=crop",
+    image: "/meals/kana-shashlyk.png",
     requiresSides: true,
     requiresSalad: true,
     tags: ["Grill", "Popular"],
@@ -57,68 +54,51 @@ export const meals: Meal[] = [
     featured: true,
   },
   {
-    id: "chicken-shashlik",
-    name: "Chicken Shashlik",
+    id: "kodune-kotlett",
+    name: "Kodune Kotlett",
     description:
-      "Tender marinated chicken thigh skewers, flame-kissed and juicy. Comes with a side and a salad.",
-    price: 6,
+      "Homestyle beef-and-pork cutlet, pan-seared and juicy. Comforting and filling.",
+    price: 6.9,
     category: "Mains",
-    image:
-      "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=1000&q=80&auto=format&fit=crop",
-    requiresSides: true,
-    requiresSalad: true,
-    tags: ["Grill"],
-    featured: true,
-  },
-  {
-    id: "meatloaf",
-    name: "Meatloaf",
-    description:
-      "Homestyle meatloaf, slow-baked with sweet onion and herbs. Comforting, wholesome, filling.",
-    price: 6,
-    category: "Mains",
-    image:
-      "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=1000&q=80&auto=format&fit=crop",
+    image: "/meals/kodune-kotlett.png",
     requiresSides: true,
     requiresSalad: true,
     tags: ["Comfort"],
-  },
-  {
-    id: "caesar-chicken",
-    name: "Caesar with Chicken",
-    description:
-      "Crisp romaine, grilled chicken, shaved parmesan, croutons and lemony Caesar dressing.",
-    price: 8,
-    category: "Mains",
-    image:
-      "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=1000&q=80&auto=format&fit=crop",
-    requiresSides: true,
-    requiresSalad: true,
-    tags: ["Light"],
     featured: true,
   },
   {
-    id: "chicken-soup",
-    name: "Chicken Soup",
+    id: "vegan-karri",
+    name: "Vegan Karri",
     description:
-      "Clear golden broth, hand-pulled chicken, noodles, carrots and dill. The classic pick-me-up.",
-    price: 3.5,
-    category: "Soups",
-    image:
-      "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Warming"],
+      "Slow-simmered vegan curry with chickpeas, coconut and warm spices.",
+    price: 6.9,
+    category: "Mains",
+    image: "/meals/vegan-karri.png",
+    requiresSides: true,
+    requiresSalad: true,
+    tags: ["Vegan", "Spiced"],
   },
   {
-    id: "solyanka",
-    name: "Solyanka",
+    id: "grill-lohesalat",
+    name: "Grill Lõhesalat",
     description:
-      "Rich, tangy meat soup with pickles, olives, capers and a squeeze of lemon. A Caucasian classic.",
-    price: 3.5,
-    category: "Soups",
-    image:
-      "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1000&q=80&auto=format&fit=crop",
-    tags: ["Bold", "Local"],
+      "Warm grilled salmon over fresh greens with lemon dressing.",
+    price: 8.9,
+    category: "Mains",
+    image: "/meals/grill-lohesalat.png",
+    tags: ["Light", "Grill"],
+    featured: true,
+  },
+  {
+    id: "grill-kanafilee-salat",
+    name: "Grill Kanafilee Salat",
+    description:
+      "Grilled chicken fillet over crisp romaine, tomato and cucumber.",
+    price: 6.9,
+    category: "Mains",
+    image: "/meals/grill-kanafilee-salat.png",
+    tags: ["Light", "Grill"],
   },
 ];
 
-export const categories: Array<"All" | MealCategory> = ["All", "Mains", "Soups"];
+export const categories: Array<"All" | MealCategory> = ["All", "Mains"];
