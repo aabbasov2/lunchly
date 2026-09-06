@@ -25,8 +25,12 @@ export const metadata: Metadata = {
   description:
     "Char-grilled skewers, comforting mains and soulful soups delivered to your desk. Pick your combo, we do the rest.",
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/logo.png", type: "image/png", sizes: "any" },
+    ],
     shortcut: "/favicon.svg",
+    apple: "/logo.png",
   },
 };
 
