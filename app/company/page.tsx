@@ -1,22 +1,24 @@
 "use client";
 
-import { companies } from "@/data/companies";
+import { companies, companyLabel } from "@/data/companies";
 import { CompanyCard } from "@/components/CompanyCard";
 import { useCompany } from "@/context/CompanyContext";
 import { useToast } from "@/context/ToastContext";
+import { useT } from "@/context/LanguageContext";
 
 export default function CompanyPage() {
   const { companyId, setCompany } = useCompany();
   const { showToast } = useToast();
+  const { t, locale } = useT();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="font-display text-4xl tracking-tight text-ink dark:text-cream">
-          Which building?
+          {t("company.title")}
         </h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-          We deliver to Krulli Kvartal. Pick your building to get started.
+          {t("company.subtitle")}
         </p>
       </div>
 
@@ -29,7 +31,7 @@ export default function CompanyPage() {
             selected={companyId === c.id}
             onSelect={() => {
               setCompany(c.id);
-              showToast(`Delivering to ${c.name}`);
+              showToast(t("company.deliveringToToast", { name: companyLabel(c, locale) }));
             }}
           />
         ))}

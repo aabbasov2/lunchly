@@ -2,21 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, UtensilsCrossed, ShoppingBag, Building2 } from "lucide-react";
+import { Home, UtensilsCrossed, ShoppingBag, Building2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
+import { useT } from "@/context/LanguageContext";
 import { cn } from "@/lib/format";
-
-const items = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/menu", label: "Menu", icon: UtensilsCrossed },
-  { href: "/cart", label: "Cart", icon: ShoppingBag },
-  { href: "/company", label: "Building", icon: Building2 },
-];
 
 export function BottomNav() {
   const pathname = usePathname();
   const { itemCount } = useCart();
+  const { t } = useT();
+
+  const items = [
+    { href: "/", label: t("nav.home"), icon: Home },
+    { href: "/menu", label: t("nav.menu"), icon: UtensilsCrossed },
+    { href: "/cart", label: t("nav.cart"), icon: ShoppingBag },
+    { href: "/company", label: t("nav.building"), icon: Building2 },
+    { href: "/about", label: t("nav.about"), icon: Info },
+  ];
 
   return (
     <nav

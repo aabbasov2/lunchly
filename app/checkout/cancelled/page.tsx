@@ -4,8 +4,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useT } from "@/context/LanguageContext";
 
 export default function CancelledPage() {
+  const { t } = useT();
+
   return (
     <div className="mx-auto flex max-w-md flex-col items-center py-10 text-center">
       <motion.div
@@ -18,21 +21,21 @@ export default function CancelledPage() {
       </motion.div>
 
       <h1 className="mt-8 font-display text-4xl tracking-tight text-ink dark:text-cream">
-        Payment cancelled
+        {t("cancelled.title")}
       </h1>
       <p className="mt-3 text-sm text-ink-muted dark:text-cream/70">
-        Your cart is still saved. Head back and try again whenever you&rsquo;re ready.
+        {t("cancelled.body")}
       </p>
 
       <div className="mt-8 flex w-full flex-col gap-3">
         <Link href="/cart">
           <Button fullWidth size="lg">
-            Back to cart
+            {t("cancelled.backToCart")}
           </Button>
         </Link>
         <Link href="/menu">
           <Button fullWidth size="lg" variant="secondary">
-            Keep browsing
+            {t("cancelled.keepBrowsing")}
           </Button>
         </Link>
       </div>

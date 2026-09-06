@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag, Clock, Truck, CreditCard } from "lucide-react";
-import { useCart, sideName, saladName } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useCompany } from "@/context/CompanyContext";
 import { useToast } from "@/context/ToastContext";
+import { useT } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/Button";
+import { mealName, sideNameFor, saladNameFor } from "@/data/meals";
 import { formatPrice, cn } from "@/lib/format";
 
 interface FieldErrors {
@@ -18,8 +20,9 @@ interface FieldErrors {
 
 export default function CartPage() {
   const { lines, increment, decrement, remove, subtotal, total, itemCount } = useCart();
-  const { companyName } = useCompany();
+  const { companyName, companyDisplay } = useCompany();
   const { showToast } = useToast();
+  const { t, locale } = useT();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -29,8 +32,8 @@ export default function CartPage() {
 
   const validate = (): FieldErrors => {
     const next: FieldErrors = {};
-    if (!name.trim()) next.name = "Please enter your name";
-    if (!phone.trim()) next.phone = "Please enter your phone number";
+    if (!name.trim()) next.name = t("cart.errName");
+    if (!phone.trim()) next.phone = t("cart.errPhone");
     return next;
   };
 
@@ -38,7 +41,7 @@ export default function CartPage() {
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
-      showToast("Please fill in the required fields");
+      showToast(t("cart.fillRequired"));
       return;
     }
     setErrors({});
@@ -55,8 +58,8 @@ export default function CartPage() {
           total,
           items: lines.map((line) => ({
             name: line.meal.name,
-            side: sideName(line.sideId) ?? "",
-            salad: saladName(line.saladId) ?? "",
+            side: sideNameFor(line.sideId, "en") ?? "",
+            salad: saladNameFor(line.saladId, "en") ?? "",
             quantity: line.quantity,
             unitPrice: line.unitPrice,
           })),
@@ -70,7 +73,7 @@ export default function CartPage() {
       window.location.href = url;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      showToast(`Checkout failed: ${message}`);
+      showToast(t("cart.checkoutFailed", { message }));
       setSubmitting(false);
     }
   };
@@ -87,13 +90,13 @@ export default function CartPage() {
           <ShoppingBag className="h-12 w-12 text-ink-muted" strokeWidth={1.5} />
         </motion.div>
         <h1 className="mt-8 font-display text-4xl tracking-tight text-ink dark:text-cream">
-          Your lunch awaits.
+          {t("cart.emptyTitle")}
         </h1>
         <p className="mt-3 max-w-xs text-sm text-ink-muted dark:text-cream/60">
-          Add something delicious for tomorrow&rsquo;s delivery.
+          {t("cart.emptyBody")}
         </p>
         <Link href="/menu" className="mt-8">
-          <Button size="lg">Browse Menu</Button>
+          <Button size="lg">{t("cart.browseMenu")}</Button>
         </Link>
       </div>
     );
@@ -104,19 +107,20 @@ export default function CartPage() {
       <div>
         <div className="mb-6">
           <h1 className="font-display text-4xl tracking-tight text-ink dark:text-cream">
-            Your cart
+            {t("cart.title")}
           </h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-            {itemCount} {itemCount === 1 ? "item" : "items"} · delivered tomorrow
+            {t(itemCount === 1 ? "cart.itemsOne" : "cart.itemsMany", { count: itemCount })}
           </p>
         </div>
 
         <ul className="space-y-3">
           <AnimatePresence initial={false}>
             {lines.map((line) => {
-              const side = sideName(line.sideId);
-              const salad = saladName(line.saladId);
+              const side = sideNameFor(line.sideId, locale);
+              const salad = saladNameFor(line.saladId, locale);
               const combo = [side, salad].filter(Boolean).join(" · ");
+              const lineName = mealName(line.meal, locale);
               return (
                 <motion.li
                   key={line.id}
@@ -130,7 +134,7 @@ export default function CartPage() {
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
                     <Image
                       src={line.meal.image}
-                      alt={line.meal.name}
+                      alt={lineName}
                       fill
                       sizes="80px"
                       className="object-cover"
@@ -139,12 +143,12 @@ export default function CartPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <h3 className="truncate text-sm font-semibold text-ink dark:text-cream">
-                        {line.meal.name}
+                        {lineName}
                       </h3>
                       <button
                         onClick={() => remove(line.id)}
                         className="text-ink-muted transition hover:text-saffron-500"
-                        aria-label={`Remove ${line.meal.name}`}
+                        aria-label={t("cart.removeAria", { name: lineName })}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -155,14 +159,14 @@ export default function CartPage() {
                       </p>
                     )}
                     <p className="text-xs text-ink-muted dark:text-cream/60">
-                      {formatPrice(line.unitPrice)} each
+                      {formatPrice(line.unitPrice)} {t("cart.each")}
                     </p>
                     <div className="mt-2 flex items-center justify-between">
                       <div className="flex items-center gap-1 rounded-full bg-black/[0.04] p-1 dark:bg-white/[0.06]">
                         <button
                           onClick={() => decrement(line.id)}
                           className="grid h-7 w-7 place-items-center rounded-full text-ink transition hover:bg-white dark:text-cream dark:hover:bg-white/[0.08]"
-                          aria-label="Decrease quantity"
+                          aria-label={t("cart.decAria")}
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </button>
@@ -172,7 +176,7 @@ export default function CartPage() {
                         <button
                           onClick={() => increment(line.id)}
                           className="grid h-7 w-7 place-items-center rounded-full text-ink transition hover:bg-white dark:text-cream dark:hover:bg-white/[0.08]"
-                          aria-label="Increase quantity"
+                          aria-label={t("cart.incAria")}
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
@@ -191,14 +195,14 @@ export default function CartPage() {
 
       <aside className="sticky top-20 space-y-4 rounded-3xl bg-surface-light p-5 shadow-soft dark:bg-elevated-dark">
         <div className="space-y-2 text-sm">
-          <Row label="Subtotal" value={formatPrice(subtotal)} />
+          <Row label={t("cart.subtotal")} value={formatPrice(subtotal)} />
           <Row
-            label="Delivery"
-            value={<span className="font-semibold text-sage-500">Free</span>}
+            label={t("cart.delivery")}
+            value={<span className="font-semibold text-sage-500">{t("cart.free")}</span>}
           />
           <div className="border-t border-black/5 pt-3 dark:border-white/[0.06]">
             <Row
-              label={<span className="text-base font-semibold">Total</span>}
+              label={<span className="text-base font-semibold">{t("cart.total")}</span>}
               value={
                 <span className="text-lg font-semibold text-ink dark:text-cream">
                   {formatPrice(total)}
@@ -211,13 +215,13 @@ export default function CartPage() {
         <div className="space-y-3">
           <Field
             id="orderer-name"
-            label="Your name"
+            label={t("cart.nameLabel")}
             value={name}
             onChange={(v) => {
               setName(v);
               if (errors.name) setErrors((e) => ({ ...e, name: undefined }));
             }}
-            placeholder="e.g. Alex Novak"
+            placeholder={t("cart.namePlaceholder")}
             autoComplete="name"
             type="text"
             required
@@ -225,22 +229,28 @@ export default function CartPage() {
           />
           <Field
             id="orderer-phone"
-            label="Phone number"
+            label={t("cart.phoneLabel")}
             value={phone}
             onChange={(v) => {
               setPhone(v);
               if (errors.phone) setErrors((e) => ({ ...e, phone: undefined }));
             }}
-            placeholder="e.g. +372 555 1234"
+            placeholder={t("cart.phonePlaceholder")}
             autoComplete="tel"
             type="tel"
             required
             error={errors.phone}
           />
-          <NotesField value={notes} onChange={setNotes} />
-          {companyName && (
+          <NotesField
+            value={notes}
+            onChange={setNotes}
+            labelText={t("cart.notesLabel")}
+            optionalText={t("cart.notesOptional")}
+            placeholderText={t("cart.notesPlaceholder")}
+          />
+          {companyDisplay && (
             <p className="text-[11px] text-ink-muted dark:text-cream/60">
-              Delivering to <span className="font-semibold">{companyName}</span>
+              {t("cart.deliveringTo")} <span className="font-semibold">{companyDisplay}</span>
             </p>
           )}
         </div>
@@ -248,21 +258,21 @@ export default function CartPage() {
         <div className="flex items-center gap-2 rounded-2xl bg-cream-100 px-3 py-2.5 text-xs text-ink-soft dark:bg-white/[0.04] dark:text-cream/80">
           <CreditCard className="h-4 w-4 shrink-0 text-saffron-500" />
           <span>
-            Secure card payment via <span className="font-semibold">Stripe</span>
+            {t("cart.secureCard")} <span className="font-semibold">Stripe</span>
           </span>
         </div>
 
         <Button fullWidth size="lg" onClick={handleCheckout} disabled={submitting}>
-          {submitting ? "Redirecting…" : `Pay ${formatPrice(total)} · Stripe`}
+          {submitting ? t("cart.redirecting") : t("cart.payButton", { total: formatPrice(total) })}
         </Button>
 
         <div className="flex items-start gap-3 rounded-2xl bg-sage-50 p-3 text-xs text-sage-700 dark:bg-sage-500/10 dark:text-sage-200">
           <Clock className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>Delivered tomorrow during lunch (11:30–13:00).</p>
+          <p>{t("cart.deliveryHint")}</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-ink-muted dark:text-cream/60">
           <Truck className="h-3.5 w-3.5" />
-          Free delivery on every order
+          {t("cart.freeDeliveryHint")}
         </div>
       </aside>
     </div>
@@ -333,7 +343,19 @@ function Field({
   );
 }
 
-function NotesField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function NotesField({
+  value,
+  onChange,
+  labelText,
+  optionalText,
+  placeholderText,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  labelText: string;
+  optionalText: string;
+  placeholderText: string;
+}) {
   const MAX = 300;
   return (
     <div className="space-y-1.5">
@@ -342,7 +364,7 @@ function NotesField({ value, onChange }: { value: string; onChange: (v: string) 
           htmlFor="orderer-notes"
           className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted dark:text-cream/60"
         >
-          Notes <span className="text-ink-muted/70">(optional)</span>
+          {labelText} <span className="text-ink-muted/70">{optionalText}</span>
         </label>
         <span className="text-[10px] text-ink-muted dark:text-cream/50">
           {value.length}/{MAX}
@@ -352,7 +374,7 @@ function NotesField({ value, onChange }: { value: string; onChange: (v: string) 
         id="orderer-notes"
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, MAX))}
-        placeholder="Anything the kitchen or driver should know? Allergies, floor, gate code…"
+        placeholder={placeholderText}
         rows={3}
         className="w-full resize-none rounded-2xl border border-black/5 bg-cream-100 px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-sage-500 focus:outline-none focus:ring-2 focus:ring-sage-500/20 dark:border-white/[0.06] dark:bg-white/[0.04] dark:text-cream dark:placeholder:text-cream/40"
       />

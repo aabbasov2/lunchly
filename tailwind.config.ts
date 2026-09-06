@@ -31,21 +31,21 @@ const config: Config = {
           700: "#40522D",
         },
         saffron: {
-          50: "#FBEDE9",
-          100: "#F6D3CB",
-          200: "#EDA69A",
-          300: "#E17D6D",
-          400: "#CE5A47",
-          500: "#B23A2E",
-          600: "#8E2B1E",
+          50: "#FBF9E4",
+          100: "#F4EEA8",
+          200: "#E8DE6F",
+          300: "#D4C240",
+          400: "#B7A423",
+          500: "#8F7F1B",
+          600: "#6F621A",
         },
         surface: {
           light: "#FFFFFF",
-          dark: "#0E0E10",
+          dark: "#000000",
         },
         elevated: {
           light: "#FFFFFF",
-          dark: "#17171B",
+          dark: "#0A0A0A",
         },
       },
       fontFamily: {
@@ -55,7 +55,7 @@ const config: Config = {
       boxShadow: {
         soft: "0 12px 40px -12px rgba(17, 17, 17, 0.10), 0 2px 6px -2px rgba(17, 17, 17, 0.05)",
         pop: "0 20px 60px -20px rgba(17, 17, 17, 0.25)",
-        ring: "0 0 0 4px rgba(178, 58, 46, 0.15)",
+        ring: "0 0 0 4px rgba(143, 127, 27, 0.15)",
       },
       borderRadius: {
         "2xl": "1.25rem",

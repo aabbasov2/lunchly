@@ -6,11 +6,13 @@ import { motion } from "framer-motion";
 import { Clock, MapPin } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCompany } from "@/context/CompanyContext";
+import { useT } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/Button";
 
 export default function SuccessPage() {
   const { clear } = useCart();
-  const { companyName } = useCompany();
+  const { companyDisplay } = useCompany();
+  const { t } = useT();
 
   useEffect(() => {
     clear();
@@ -51,7 +53,7 @@ export default function SuccessPage() {
         transition={{ delay: 0.4 }}
         className="mt-8 font-display text-5xl tracking-tight text-ink dark:text-cream"
       >
-        Order Scheduled!
+        {t("success.title")}
       </motion.h1>
       <motion.p
         initial={{ opacity: 0, y: 10 }}
@@ -59,7 +61,7 @@ export default function SuccessPage() {
         transition={{ delay: 0.5 }}
         className="mt-3 text-base text-ink-muted dark:text-cream/70"
       >
-        We&rsquo;ll deliver your lunch tomorrow.
+        {t("success.body")}
       </motion.p>
 
       <motion.div
@@ -70,13 +72,13 @@ export default function SuccessPage() {
       >
         <Detail
           icon={<Clock className="h-4 w-4" />}
-          label="Estimated delivery"
-          value="11:30 – 13:00"
+          label={t("success.eta")}
+          value={t("success.etaTime")}
         />
         <Detail
           icon={<MapPin className="h-4 w-4" />}
-          label="Deliver to"
-          value={companyName ? `${companyName} office` : "Your workplace"}
+          label={t("success.deliverTo")}
+          value={companyDisplay ? `${companyDisplay} ${t("success.officeSuffix")}` : t("success.yourWorkplace")}
         />
       </motion.div>
 
@@ -88,12 +90,12 @@ export default function SuccessPage() {
       >
         <Link href="/menu">
           <Button fullWidth size="lg">
-            Order for another day
+            {t("success.orderAnother")}
           </Button>
         </Link>
         <Link href="/">
           <Button fullWidth size="lg" variant="secondary">
-            Back to home
+            {t("success.backHome")}
           </Button>
         </Link>
       </motion.div>

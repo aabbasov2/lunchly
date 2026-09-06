@@ -5,11 +5,13 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useT } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/format";
 
 export function FloatingCartButton() {
   const pathname = usePathname();
   const { itemCount, subtotal } = useCart();
+  const { t } = useT();
   const visible = itemCount > 0 && !pathname.startsWith("/cart") && !pathname.startsWith("/checkout");
 
   return (
@@ -30,7 +32,7 @@ export function FloatingCartButton() {
               <span className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-sm font-bold dark:bg-ink/10">
                 {itemCount}
               </span>
-              <span className="text-sm font-semibold">View Cart</span>
+              <span className="text-sm font-semibold">{t("nav.cart")}</span>
             </span>
             <span className="flex items-center gap-2 text-sm font-semibold">
               <ShoppingBag className="h-4 w-4" />

@@ -9,12 +9,14 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { companies } from "@/data/companies";
+import { companies, companyLabel } from "@/data/companies";
+import { useT } from "./LanguageContext";
 
 interface CompanyContextValue {
   companyId: string | null;
   setCompany: (id: string | null) => void;
   companyName: string | null;
+  companyDisplay: string | null;
 }
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
@@ -22,6 +24,7 @@ const CompanyContext = createContext<CompanyContextValue | null>(null);
 const STORAGE_KEY = "fizuli:company";
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
+  const { locale } = useT();
   const [companyId, setCompanyId] = useState<string | null>("krulli-y");
   const [hydrated, setHydrated] = useState(false);
 
@@ -47,11 +50,14 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const setCompany = useCallback((id: string | null) => setCompanyId(id), []);
 
   const value = useMemo<CompanyContextValue>(() => {
-    const companyName = companyId
-      ? companies.find((c) => c.id === companyId)?.name ?? null
-      : null;
-    return { companyId, setCompany, companyName };
-  }, [companyId, setCompany]);
+    const company = companyId ? companies.find((c) => c.id === companyId) ?? null : null;
+    return {
+      companyId,
+      setCompany,
+      companyName: company?.name ?? null,
+      companyDisplay: company ? companyLabel(company, locale) : null,
+    };
+  }, [companyId, setCompany, locale]);
 
   return <CompanyContext.Provider value={value}>{children}</CompanyContext.Provider>;
 }

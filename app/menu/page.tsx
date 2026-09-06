@@ -3,16 +3,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Search, Sparkles } from "lucide-react";
-import { meals, categories, type MealCategory } from "@/data/meals";
+import {
+  meals,
+  categories,
+  mealName,
+  mealDescription,
+  mealCategoryLabel,
+  type MealCategory,
+} from "@/data/meals";
 import { FoodCard } from "@/components/FoodCard";
 import { FoodCardSkeleton } from "@/components/ui/Skeleton";
 import { PromoBanner } from "@/components/PromoBanner";
 import { CountdownBanner } from "@/components/CountdownBanner";
+import { useT } from "@/context/LanguageContext";
 import { cn } from "@/lib/format";
 
 type CategoryFilter = "All" | MealCategory;
 
 export default function MenuPage() {
+  const { t, locale } = useT();
   const [category, setCategory] = useState<CategoryFilter>("All");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -32,8 +41,10 @@ export default function MenuPage() {
       if (!q) return true;
       return (
         m.name.toLowerCase().includes(q) ||
+        (m.name_et ?? "").toLowerCase().includes(q) ||
         m.description.toLowerCase().includes(q) ||
-        m.tags?.some((t) => t.toLowerCase().includes(q))
+        (m.description_et ?? "").toLowerCase().includes(q) ||
+        m.tags?.some((tag) => tag.toLowerCase().includes(q))
       );
     });
   }, [category, query]);
@@ -42,10 +53,10 @@ export default function MenuPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-4xl tracking-tight text-ink dark:text-cream">
-          Today&rsquo;s kitchen
+          {t("menu.title")}
         </h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-          Pick a main, choose a side and salad. We&rsquo;ll take it from there.
+          {t("menu.subtitle")}
         </p>
       </div>
 
@@ -59,7 +70,7 @@ export default function MenuPage() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search meals, tags, or ingredients"
+            placeholder={t("menu.search")}
             className="h-12 w-full rounded-full border border-black/5 bg-surface-light pl-11 pr-4 text-sm text-ink placeholder:text-ink-muted focus:border-sage-500 focus:outline-none focus:ring-2 focus:ring-sage-500/20 dark:border-white/[0.06] dark:bg-elevated-dark dark:text-cream dark:placeholder:text-cream/40"
           />
         </div>
@@ -77,7 +88,7 @@ export default function MenuPage() {
                     : "bg-surface-light text-ink-soft hover:bg-black/5 dark:bg-elevated-dark dark:text-cream/80 dark:hover:bg-white/[0.06]",
                 )}
               >
-                {c}
+                {mealCategoryLabel(c, locale)}
               </button>
             );
           })}
@@ -89,7 +100,7 @@ export default function MenuPage() {
           <div className="mb-3 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-saffron-500" />
             <h2 className="text-sm font-semibold uppercase tracking-wider text-ink-muted dark:text-cream/70">
-              Chef&rsquo;s Pick
+              {t("menu.chefsPickHeading")}
             </h2>
           </div>
           <motion.div
@@ -101,20 +112,20 @@ export default function MenuPage() {
             <div className="grid gap-4 sm:grid-cols-[1.2fr_1fr] sm:items-center">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-saffron-600 dark:text-saffron-200">
-                  Featured tomorrow
+                  {t("menu.featuredTomorrow")}
                 </p>
                 <h3 className="mt-1 font-display text-3xl text-ink dark:text-cream">
-                  {chefsPick.name}
+                  {mealName(chefsPick, locale)}
                 </h3>
                 <p className="mt-2 text-sm text-ink-muted dark:text-cream/70">
-                  {chefsPick.description}
+                  {mealDescription(chefsPick, locale)}
                 </p>
                 <div className="mt-4 flex items-center gap-3">
                   <span className="text-lg font-semibold text-ink dark:text-cream">
-                    From €{chefsPick.price.toFixed(2)}
+                    {t("menu.fromPrice", { price: chefsPick.price.toFixed(2) })}
                   </span>
                   <span className="text-xs uppercase tracking-wider text-ink-muted dark:text-cream/60">
-                    Combo · pick a side &amp; salad
+                    {t("menu.comboHint")}
                   </span>
                 </div>
               </div>
@@ -122,7 +133,7 @@ export default function MenuPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={chefsPick.image}
-                  alt={chefsPick.name}
+                  alt={mealName(chefsPick, locale)}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -134,7 +145,7 @@ export default function MenuPage() {
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-ink-muted dark:text-cream/70">
-            {category === "All" ? "All meals" : category} · {filtered.length}
+            {category === "All" ? t("menu.allMeals") : mealCategoryLabel(category, locale)} · {filtered.length}
           </h2>
         </div>
         {loading ? (
@@ -146,10 +157,10 @@ export default function MenuPage() {
         ) : filtered.length === 0 ? (
           <div className="rounded-3xl bg-surface-light p-10 text-center shadow-soft dark:bg-elevated-dark">
             <p className="font-display text-2xl text-ink dark:text-cream">
-              Nothing matches that yet.
+              {t("menu.emptyTitle")}
             </p>
             <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-              Try another category or search term.
+              {t("menu.emptySub")}
             </p>
           </div>
         ) : (

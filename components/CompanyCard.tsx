@@ -3,6 +3,8 @@
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Company } from "@/data/companies";
+import { companyLabel } from "@/data/companies";
+import { useT } from "@/context/LanguageContext";
 import { cn } from "@/lib/format";
 
 interface CompanyCardProps {
@@ -13,6 +15,8 @@ interface CompanyCardProps {
 }
 
 export function CompanyCard({ company, selected, onSelect, index = 0 }: CompanyCardProps) {
+  const { locale } = useT();
+  const label = companyLabel(company, locale);
   return (
     <motion.button
       initial={{ opacity: 0, y: 10 }}
@@ -32,10 +36,10 @@ export function CompanyCard({ company, selected, onSelect, index = 0 }: CompanyC
           className="grid h-11 w-11 place-items-center rounded-xl text-sm font-bold text-white"
           style={{ backgroundColor: company.color }}
         >
-          {company.name.charAt(0)}
+          {label.charAt(0)}
         </div>
         <div>
-          <p className="font-semibold text-ink dark:text-cream">{company.name}</p>
+          <p className="font-semibold text-ink dark:text-cream">{label}</p>
           <p className="text-xs text-ink-muted dark:text-cream/60">{company.domain}</p>
         </div>
       </div>

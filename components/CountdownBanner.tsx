@@ -3,9 +3,11 @@
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getCutoffInfo, type CutoffInfo } from "@/lib/cutoff";
+import { useT } from "@/context/LanguageContext";
 
 export function CountdownBanner() {
   const [info, setInfo] = useState<CutoffInfo | null>(null);
+  const { t } = useT();
 
   useEffect(() => {
     setInfo(getCutoffInfo());
@@ -26,13 +28,14 @@ export function CountdownBanner() {
     >
       <Clock className="h-4 w-4" />
       {info.closed ? (
-        <span>Ordering opens again tomorrow morning</span>
+        <span>{t("countdown.closed")}</span>
       ) : (
         <span>
-          Today&rsquo;s ordering closes in{" "}
+          {t("countdown.closesInPrefix")}{" "}
           <strong className="font-semibold">
             {info.hours}h {String(info.minutes).padStart(2, "0")}m
           </strong>
+          {t("countdown.closesInSuffix") && " " + t("countdown.closesInSuffix")}
         </span>
       )}
     </div>

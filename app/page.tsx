@@ -7,28 +7,20 @@ import { ArrowRight, Truck, UtensilsCrossed, Building2, Clock, Sparkles } from "
 import { CountdownBanner } from "@/components/CountdownBanner";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { meals } from "@/data/meals";
-
-const features = [
-  {
-    icon: UtensilsCrossed,
-    title: "Charcoal-grilled daily",
-    body: "Skewers off the mangal, meatloaf out of the oven — cooked the morning of delivery.",
-  },
-  {
-    icon: Truck,
-    title: "Free delivery",
-    body: "Every order, every day. Delivered straight to your workplace, no surcharge.",
-  },
-  {
-    icon: Building2,
-    title: "One-tap combos",
-    body: "Pick your main, tap a side, tap a salad. Ordering is genuinely that fast.",
-  },
-];
+import { meals, mealName } from "@/data/meals";
+import { useT } from "@/context/LanguageContext";
 
 export default function Home() {
+  const { t, locale } = useT();
   const featured = meals.filter((m) => m.featured).slice(0, 3);
+
+  const features = [
+    { icon: UtensilsCrossed, title: t("home.feat1Title"), body: t("home.feat1Body") },
+    { icon: Truck, title: t("home.feat2Title"), body: t("home.feat2Body") },
+    { icon: Building2, title: t("home.feat3Title"), body: t("home.feat3Body") },
+  ];
+
+  const checks = [t("home.check1"), t("home.check2"), t("home.check3"), t("home.check4")];
 
   return (
     <div className="space-y-14">
@@ -47,7 +39,7 @@ export default function Home() {
             >
               <Badge tone="sage" className="mb-4">
                 <Sparkles className="h-3 w-3" />
-                Combos from €6
+                {t("home.badge")}
               </Badge>
             </motion.div>
             <motion.h1
@@ -56,9 +48,10 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.05 }}
               className="font-display text-[2.5rem] leading-[1.05] tracking-tight text-ink sm:text-6xl dark:text-cream"
             >
-              Homestyle lunch,
+              {t("home.heroTop")}
               <br />
-              <span className="italic text-saffron-500">off the mangal</span>, to your desk.
+              <span className="italic text-saffron-500">{t("home.heroAccent")}</span>
+              {t("home.heroTail")}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
@@ -66,8 +59,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-4 max-w-md text-base text-ink-muted sm:text-lg dark:text-cream/70"
             >
-              Pick a main, choose a side and a salad — Fizuli sends grill-fresh Caucasian
-              lunches straight to your workplace.
+              {t("home.heroBody")}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -77,19 +69,19 @@ export default function Home() {
             >
               <Link href="/menu">
                 <Button size="lg">
-                  Order Lunch
+                  {t("home.orderLunch")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/company">
                 <Button size="lg" variant="secondary">
-                  Check your workplace
+                  {t("home.checkWorkplace")}
                 </Button>
               </Link>
             </motion.div>
             <p className="mt-6 inline-flex items-center gap-2 text-xs text-ink-muted dark:text-cream/60">
               <Clock className="h-3.5 w-3.5" />
-              Orders close every day at 18:00 for next-day delivery
+              {t("home.cutoffHint")}
             </p>
           </div>
 
@@ -121,9 +113,9 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-xs font-medium text-ink-muted dark:text-cream/60">
-                  Tomorrow &middot; 11:30–13:00
+                  {t("home.tomorrowWindow")}
                 </p>
-                <p className="text-sm font-semibold text-ink dark:text-cream">Free delivery</p>
+                <p className="text-sm font-semibold text-ink dark:text-cream">{t("home.freeDelivery")}</p>
               </div>
             </motion.div>
           </motion.div>
@@ -134,10 +126,10 @@ export default function Home() {
         <div className="mb-6 flex items-end justify-between">
           <div>
             <h2 className="font-display text-3xl tracking-tight text-ink dark:text-cream">
-              Why teams love Fizuli
+              {t("home.whyTitle")}
             </h2>
             <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-              Real food, real fast — from the grill to your desk.
+              {t("home.whySubtitle")}
             </p>
           </div>
         </div>
@@ -170,17 +162,17 @@ export default function Home() {
         <div className="mb-6 flex items-end justify-between">
           <div>
             <h2 className="font-display text-3xl tracking-tight text-ink dark:text-cream">
-              What&rsquo;s on the grill
+              {t("home.grillTitle")}
             </h2>
             <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-              A taste of what&rsquo;s cooking today.
+              {t("home.grillSubtitle")}
             </p>
           </div>
           <Link
             href="/menu"
             className="hidden text-sm font-semibold text-ink underline-offset-4 hover:underline sm:inline dark:text-cream"
           >
-            See full menu →
+            {t("home.seeMenu")}
           </Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -196,7 +188,7 @@ export default function Home() {
               <div className="relative aspect-[5/4] overflow-hidden bg-cream-100">
                 <Image
                   src={m.image}
-                  alt={m.name}
+                  alt={mealName(m, locale)}
                   fill
                   sizes="(min-width: 768px) 33vw, 100vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
@@ -204,12 +196,12 @@ export default function Home() {
               </div>
               <div className="flex items-center justify-between p-4">
                 <div>
-                  <p className="text-sm font-semibold text-ink dark:text-cream">{m.name}</p>
+                  <p className="text-sm font-semibold text-ink dark:text-cream">{mealName(m, locale)}</p>
                   <p className="text-xs text-ink-muted dark:text-cream/60">
-                    From €{m.price.toFixed(2)}
+                    {t("home.from")} €{m.price.toFixed(2)}
                   </p>
                 </div>
-                <Badge tone="sage">Fresh</Badge>
+                <Badge tone="sage">{t("home.fresh")}</Badge>
               </div>
             </motion.div>
           ))}
@@ -220,20 +212,12 @@ export default function Home() {
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           <div>
             <h2 className="font-display text-4xl tracking-tight sm:text-5xl">
-              Lunch that actually <span className="italic text-sage-300">tastes</span> like something.
+              {t("home.ctaTitleA")} <span className="italic text-sage-300">{t("home.ctaTitleAccent")}</span> {t("home.ctaTitleB")}
             </h2>
-            <p className="mt-3 text-cream/70">
-              Order in the morning, delivered between 11:30 and 13:00. Real skewers, real
-              broths, real herbs. No queues, no cold sandwiches, no compromises.
-            </p>
+            <p className="mt-3 text-cream/70">{t("home.ctaBody")}</p>
           </div>
           <div className="grid gap-3 rounded-3xl bg-white/[0.05] p-6 backdrop-blur">
-            {[
-              "Free delivery on every order",
-              "Mains from €6, combos included",
-              "Warming soups at €3.50",
-              "Delivered to your workplace",
-            ].map((item) => (
+            {checks.map((item) => (
               <div key={item} className="flex items-center gap-3 text-sm">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-sage-500 text-[10px] font-bold">
                   ✓

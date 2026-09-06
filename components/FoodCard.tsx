@@ -5,15 +5,27 @@ import { Heart, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import type { Meal } from "@/data/meals";
-import { DEFAULT_SALAD_ID, DEFAULT_SIDE_ID, salads, sides } from "@/data/meals";
+import {
+  DEFAULT_SALAD_ID,
+  DEFAULT_SIDE_ID,
+  salads,
+  sides,
+  mealName,
+  mealDescription,
+  mealCategoryLabel,
+  sideLabel,
+  saladLabel,
+} from "@/data/meals";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, cn } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/context/ToastContext";
+import { useT } from "@/context/LanguageContext";
 
 export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
   const { add } = useCart();
   const { showToast } = useToast();
+  const { t, locale } = useT();
   const [favorite, setFavorite] = useState(false);
   const [pulse, setPulse] = useState(false);
 
@@ -23,6 +35,7 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
 
   const sideUpcharge = sides.find((s) => s.id === sideId)?.upcharge ?? 0;
   const currentPrice = meal.price + (needsCombo ? sideUpcharge : 0);
+  const localizedName = mealName(meal, locale);
 
   const handleAdd = () => {
     if (needsCombo) {
@@ -30,7 +43,7 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
     } else {
       add(meal);
     }
-    showToast(`Added ${meal.name}`);
+    showToast(t("food.addedToast", { name: localizedName }));
     setPulse(true);
     setTimeout(() => setPulse(false), 400);
   };
@@ -45,19 +58,19 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
       <div className="relative aspect-[4/3] overflow-hidden bg-cream-100 dark:bg-white/[0.04]">
         <Image
           src={meal.image}
-          alt={meal.name}
+          alt={localizedName}
           fill
           sizes="(min-width: 768px) 33vw, 100vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
         />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <div className="flex flex-wrap gap-1.5">
-            {meal.featured && <Badge tone="ink">On the Menu</Badge>}
-            {meal.chefsPick && <Badge tone="saffron">Chef&rsquo;s Pick</Badge>}
+            {meal.featured && <Badge tone="ink">{t("food.onMenu")}</Badge>}
+            {meal.chefsPick && <Badge tone="saffron">{t("food.chefsPick")}</Badge>}
           </div>
           <button
             onClick={() => setFavorite((f) => !f)}
-            aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={favorite ? t("food.favRemove") : t("food.favAdd")}
             className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-ink shadow-soft backdrop-blur transition hover:bg-white dark:bg-black/40 dark:text-cream"
           >
             <Heart
@@ -73,19 +86,19 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-base font-semibold leading-snug text-ink dark:text-cream">
-            {meal.name}
+            {localizedName}
           </h3>
           <span className="text-base font-semibold text-ink dark:text-cream">
             {formatPrice(meal.price)}
           </span>
         </div>
         <p className="line-clamp-2 text-sm text-ink-muted dark:text-cream/60">
-          {meal.description}
+          {mealDescription(meal, locale)}
         </p>
 
         {needsCombo ? (
           <div className="mt-3 space-y-3">
-            <ComboRow label="Side">
+            <ComboRow label={t("food.sideLabel")}>
               {sides.map((s) => {
                 const active = s.id === sideId;
                 return (
@@ -95,7 +108,7 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
                     onClick={() => setSideId(s.id)}
                     aria-pressed={active}
                   >
-                    {s.name}
+                    {sideLabel(s, locale)}
                     {s.upcharge > 0 && (
                       <span
                         className={cn(
@@ -112,7 +125,7 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
                 );
               })}
             </ComboRow>
-            <ComboRow label="Salad">
+            <ComboRow label={t("food.saladLabel")}>
               {salads.map((s) => {
                 const active = s.id === saladId;
                 return (
@@ -122,7 +135,7 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
                     onClick={() => setSaladId(s.id)}
                     aria-pressed={active}
                   >
-                    {s.name}
+                    {saladLabel(s, locale)}
                   </ChipButton>
                 );
               })}
@@ -133,16 +146,16 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
               animate={pulse ? { scale: [1, 1.03, 1] } : { scale: 1 }}
               transition={{ duration: 0.3 }}
               className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full bg-saffron-500 px-4 py-3 text-sm font-semibold text-white shadow-pop ring-1 ring-saffron-600/40 transition hover:bg-saffron-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-light dark:focus-visible:ring-offset-elevated-dark"
-              aria-label={`Add ${meal.name} to cart`}
+              aria-label={t("food.addAria", { name: localizedName })}
             >
               <Plus className="h-4 w-4" strokeWidth={3} />
-              Add to cart · {formatPrice(currentPrice)}
+              {t("food.addToCart")} · {formatPrice(currentPrice)}
             </motion.button>
           </div>
         ) : (
           <div className="mt-auto flex items-center justify-between pt-3">
             <span className="text-xs uppercase tracking-wider text-ink-muted dark:text-cream/60">
-              {meal.category}
+              {mealCategoryLabel(meal.category, locale)}
             </span>
             <motion.button
               onClick={handleAdd}
@@ -150,10 +163,10 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
               animate={pulse ? { scale: [1, 1.08, 1] } : { scale: 1 }}
               transition={{ duration: 0.35 }}
               className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-cream shadow-soft transition hover:bg-ink-soft dark:bg-cream dark:text-ink dark:hover:bg-cream-100"
-              aria-label={`Add ${meal.name} to cart`}
+              aria-label={t("food.addAria", { name: localizedName })}
             >
               <Plus className="h-3.5 w-3.5" strokeWidth={3} />
-              Add
+              {t("food.add")}
             </motion.button>
           </div>
         )}
