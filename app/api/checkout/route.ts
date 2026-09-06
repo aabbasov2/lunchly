@@ -16,6 +16,7 @@ interface CheckoutPayload {
   company: string;
   notes?: string;
   total: number;
+  deliveryDate?: string;
   items: OrderItem[];
 }
 
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
         notes: (payload.notes ?? "").slice(0, 500),
         order: orderDescription,
         total: String(payload.total),
+        deliveryDate: (payload.deliveryDate ?? "").slice(0, 32),
       },
     });
 

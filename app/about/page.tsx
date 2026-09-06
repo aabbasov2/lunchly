@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Flame, Truck, ExternalLink, Utensils } from "lucide-react";
+import { MapPin, Clock, Flame, Truck, ExternalLink, Utensils, Phone } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useT } from "@/context/LanguageContext";
@@ -130,6 +130,12 @@ export default function AboutPage() {
             value={t("about.locationValue")}
           />
           <InfoRow
+            icon={<Phone className="h-4 w-4" />}
+            label={t("about.phoneLabel")}
+            value={t("about.phoneValue")}
+            href={`tel:${t("about.phoneValue").replace(/\s+/g, "")}`}
+          />
+          <InfoRow
             icon={<Clock className="h-4 w-4" />}
             label={t("about.deliveryLabel")}
             value={t("about.deliveryValue")}
@@ -205,13 +211,15 @@ function InfoRow({
   icon,
   label,
   value,
+  href,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
+  href?: string;
 }) {
-  return (
-    <div className="flex items-start gap-3 rounded-2xl bg-cream-100 px-4 py-3 dark:bg-white/[0.04]">
+  const body = (
+    <>
       <div className="mt-0.5 grid h-8 w-8 place-items-center rounded-xl bg-ink text-cream dark:bg-cream dark:text-ink">
         {icon}
       </div>
@@ -221,6 +229,21 @@ function InfoRow({
         </p>
         <p className="text-sm font-semibold text-ink dark:text-cream">{value}</p>
       </div>
+    </>
+  );
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="flex items-start gap-3 rounded-2xl bg-cream-100 px-4 py-3 transition hover:bg-cream-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
+      >
+        {body}
+      </a>
+    );
+  }
+  return (
+    <div className="flex items-start gap-3 rounded-2xl bg-cream-100 px-4 py-3 dark:bg-white/[0.04]">
+      {body}
     </div>
   );
 }

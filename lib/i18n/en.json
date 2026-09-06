@@ -10,9 +10,9 @@
     "about": "About"
   },
   "countdown": {
-    "closed": "Ordering opens again tomorrow morning",
-    "closesInPrefix": "Today's ordering closes in",
-    "closesInSuffix": ""
+    "tomorrow": "tomorrow",
+    "nextDelivery": "Next delivery {day}",
+    "closesIn": "ordering closes in"
   },
   "promo": {
     "title": "Free delivery on every order",
@@ -26,7 +26,7 @@
     "heroBody": "Pick a main, choose a side and a salad — Fizuli sends grill-fresh Caucasian lunches straight to your workplace.",
     "orderLunch": "Order Lunch",
     "checkWorkplace": "Check your workplace",
-    "cutoffHint": "Orders close every day at 18:00 for next-day delivery",
+    "cutoffHint": "Weekday delivery (Mon–Fri). Order by 20:00 the day before — Monday orders open Thursday 20:00 through Sunday 20:00.",
     "tomorrowWindow": "Tomorrow · 11:30–13:00",
     "freeDelivery": "Free delivery",
     "whyTitle": "Why teams love Fizuli",
@@ -82,8 +82,8 @@
     "emptyBody": "Add something delicious for tomorrow's delivery.",
     "browseMenu": "Browse Menu",
     "title": "Your cart",
-    "itemsOne": "{count} item · delivered tomorrow",
-    "itemsMany": "{count} items · delivered tomorrow",
+    "itemsOne": "{count} item · delivered {day}",
+    "itemsMany": "{count} items · delivered {day}",
     "subtotal": "Subtotal",
     "delivery": "Delivery",
     "free": "Free",
@@ -107,6 +107,10 @@
     "errPhone": "Please enter your phone number",
     "fillRequired": "Please fill in the required fields",
     "checkoutFailed": "Checkout failed: {message}",
+    "deliveryOn": "Delivery",
+    "deliveryWindow": "Lunch window · 11:30 – 13:00",
+    "orderBy": "Confirm order by",
+    "timeLeft": "{hours}h {minutes}m left",
     "deliveryHint": "Delivered tomorrow during lunch (11:30–13:00).",
     "freeDeliveryHint": "Free delivery on every order",
     "required": "*"
@@ -152,6 +156,8 @@
     "visitBody": "Prefer to eat in? Our restaurant in Kehra is open to walk-in guests. For up-to-date hours, menu specials and photos, follow us on Facebook.",
     "locationLabel": "Restaurant",
     "locationValue": "Fizuli Grill-Resto · Kehra, Estonia",
+    "phoneLabel": "Phone",
+    "phoneValue": "+372 5669 5353",
     "deliveryLabel": "Delivery area",
     "deliveryValue": "Krulli Kvartal, Tallinn · Mon–Fri, 11:30–13:00",
     "cuisineLabel": "Cuisine",

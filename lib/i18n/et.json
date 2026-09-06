@@ -10,9 +10,9 @@
     "about": "Meist"
   },
   "countdown": {
-    "closed": "Tellimine avaneb uuesti homme hommikul",
-    "closesInPrefix": "Tänane tellimine sulgub",
-    "closesInSuffix": "pärast"
+    "tomorrow": "homme",
+    "nextDelivery": "Järgmine kohaletoimetamine {day}",
+    "closesIn": "tellimine sulgub"
   },
   "promo": {
     "title": "Tasuta kohaletoimetamine iga tellimusega",
@@ -26,7 +26,7 @@
     "heroBody": "Vali põhiroog, kõrvasüsi ja salat — Fizuli toob grillivärsked road otse sinu töökohta.",
     "orderLunch": "Telli lõuna",
     "checkWorkplace": "Kontrolli oma töökohta",
-    "cutoffHint": "Tellimused suletakse iga päev kell 18:00 järgmise päeva kohaletoimetamiseks",
+    "cutoffHint": "Kohaletoimetamine tööpäeviti (E–R). Telli eelmisel päeval kella 20:00-ni — esmaspäevased tellimused avatakse neljapäeval kell 20:00 ja sulguvad pühapäeval kell 20:00.",
     "tomorrowWindow": "Homme · 11:30–13:00",
     "freeDelivery": "Tasuta transport",
     "whyTitle": "Miks meeskonnad armastavad Fizulit",
@@ -82,8 +82,8 @@
     "emptyBody": "Lisa midagi maitsvat homseks kohaletoimetamiseks.",
     "browseMenu": "Sirvi menüüd",
     "title": "Sinu ostukorv",
-    "itemsOne": "{count} toode · homne kohaletoimetamine",
-    "itemsMany": "{count} toodet · homne kohaletoimetamine",
+    "itemsOne": "{count} toode · kohaletoimetamine {day}",
+    "itemsMany": "{count} toodet · kohaletoimetamine {day}",
     "subtotal": "Vahesumma",
     "delivery": "Kohaletoimetamine",
     "free": "Tasuta",
@@ -107,6 +107,10 @@
     "errPhone": "Palun sisesta oma telefoninumber",
     "fillRequired": "Palun täida kohustuslikud väljad",
     "checkoutFailed": "Makse ebaõnnestus: {message}",
+    "deliveryOn": "Kohaletoimetamine",
+    "deliveryWindow": "Lõunaaken · 11:30 – 13:00",
+    "orderBy": "Kinnita tellimus",
+    "timeLeft": "{hours}h {minutes}m jäänud",
     "deliveryHint": "Kohaletoimetamine homme lõunaajal (11:30–13:00).",
     "freeDeliveryHint": "Tasuta kohaletoimetamine iga tellimusega",
     "required": "*"
@@ -152,6 +156,8 @@
     "visitBody": "Tahad kohapeal süüa? Meie restoran Kehras on avatud ka külastajatele. Ajakohaste lahtiolekuaegade, menüü ja fotode jaoks jälgi meid Facebookis.",
     "locationLabel": "Restoran",
     "locationValue": "Fizuli Grill-Resto · Kehra, Eesti",
+    "phoneLabel": "Telefon",
+    "phoneValue": "+372 5669 5353",
     "deliveryLabel": "Kohaletoimetamise piirkond",
     "deliveryValue": "Krulli Kvartal, Tallinn · E–R, 11:30–13:00",
     "cuisineLabel": "Köök",

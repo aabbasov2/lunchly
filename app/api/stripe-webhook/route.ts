@@ -43,6 +43,7 @@ export async function POST(request: Request) {
   try {
     await appendOrderRow({
       orderedAt: md.orderedAt || new Date().toISOString(),
+      deliveryDate: md.deliveryDate || "",
       name: md.name || "",
       phone: md.phone || "",
       company: md.company || "",

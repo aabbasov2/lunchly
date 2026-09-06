@@ -1,5 +1,6 @@
 interface SheetsRow {
   orderedAt: string;
+  deliveryDate: string;
   name: string;
   phone: string;
   company: string;

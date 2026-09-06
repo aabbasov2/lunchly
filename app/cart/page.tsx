@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Trash2, ShoppingBag, Clock, Truck, CreditCard } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Clock, Truck, CreditCard, CalendarDays } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCompany } from "@/context/CompanyContext";
 import { useToast } from "@/context/ToastContext";
@@ -12,6 +12,13 @@ import { useT } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/Button";
 import { mealName, sideNameFor, saladNameFor } from "@/data/meals";
 import { formatPrice, cn } from "@/lib/format";
+import {
+  getCutoffInfo,
+  isTomorrow,
+  formatDeliveryDayLong,
+  formatCutoffStamp,
+  type CutoffInfo,
+} from "@/lib/cutoff";
 
 interface FieldErrors {
   name?: string;
@@ -29,6 +36,13 @@ export default function CartPage() {
   const [notes, setNotes] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [cutoff, setCutoff] = useState<CutoffInfo | null>(null);
+
+  useEffect(() => {
+    setCutoff(getCutoffInfo());
+    const id = setInterval(() => setCutoff(getCutoffInfo()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const validate = (): FieldErrors => {
     const next: FieldErrors = {};
@@ -46,6 +60,9 @@ export default function CartPage() {
     }
     setErrors({});
     setSubmitting(true);
+    const snap = cutoff ?? getCutoffInfo();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const deliveryDate = `${snap.deliveryDate.getFullYear()}-${pad(snap.deliveryDate.getMonth() + 1)}-${pad(snap.deliveryDate.getDate())}`;
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -56,6 +73,7 @@ export default function CartPage() {
           company: companyName ?? "",
           notes: notes.trim(),
           total,
+          deliveryDate,
           items: lines.map((line) => ({
             name: line.meal.name,
             side: sideNameFor(line.sideId, "en") ?? "",
@@ -110,7 +128,14 @@ export default function CartPage() {
             {t("cart.title")}
           </h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-cream/60">
-            {t(itemCount === 1 ? "cart.itemsOne" : "cart.itemsMany", { count: itemCount })}
+            {t(itemCount === 1 ? "cart.itemsOne" : "cart.itemsMany", {
+              count: itemCount,
+              day: cutoff
+                ? isTomorrow(cutoff.deliveryDate)
+                  ? t("countdown.tomorrow")
+                  : formatDeliveryDayLong(cutoff.deliveryDate, locale)
+                : "—",
+            })}
           </p>
         </div>
 
@@ -194,6 +219,46 @@ export default function CartPage() {
       </div>
 
       <aside className="sticky top-20 space-y-4 rounded-3xl bg-surface-light p-5 shadow-soft dark:bg-elevated-dark">
+        {cutoff && (
+          <div className="space-y-2.5 rounded-2xl border border-sage-500/20 bg-sage-50 p-3 dark:border-sage-500/25 dark:bg-sage-500/[0.08]">
+            <div className="flex items-start gap-2.5">
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-sage-500 text-white">
+                <CalendarDays className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1 text-xs">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-700 dark:text-sage-200/80">
+                  {t("cart.deliveryOn")}
+                </p>
+                <p className="mt-0.5 text-sm font-semibold text-ink dark:text-cream">
+                  {isTomorrow(cutoff.deliveryDate)
+                    ? t("countdown.tomorrow")
+                    : formatDeliveryDayLong(cutoff.deliveryDate, locale)}
+                </p>
+                <p className="text-ink-muted dark:text-cream/70">{t("cart.deliveryWindow")}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5 border-t border-sage-500/15 pt-2.5 dark:border-sage-500/25">
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-saffron-500 text-white">
+                <Clock className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1 text-xs">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-saffron-600 dark:text-saffron-200/80">
+                  {t("cart.orderBy")}
+                </p>
+                <p className="mt-0.5 text-sm font-semibold text-ink dark:text-cream">
+                  {formatCutoffStamp(cutoff.cutoffDate, locale)}
+                </p>
+                <p className="text-ink-muted dark:text-cream/70">
+                  {t("cart.timeLeft", {
+                    hours: cutoff.hours,
+                    minutes: String(cutoff.minutes).padStart(2, "0"),
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2 text-sm">
           <Row label={t("cart.subtotal")} value={formatPrice(subtotal)} />
           <Row
@@ -266,10 +331,6 @@ export default function CartPage() {
           {submitting ? t("cart.redirecting") : t("cart.payButton", { total: formatPrice(total) })}
         </Button>
 
-        <div className="flex items-start gap-3 rounded-2xl bg-sage-50 p-3 text-xs text-sage-700 dark:bg-sage-500/10 dark:text-sage-200">
-          <Clock className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>{t("cart.deliveryHint")}</p>
-        </div>
         <div className="flex items-center gap-2 text-xs text-ink-muted dark:text-cream/60">
           <Truck className="h-3.5 w-3.5" />
           {t("cart.freeDeliveryHint")}

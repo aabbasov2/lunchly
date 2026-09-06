@@ -89,8 +89,6 @@ export const meals: Meal[] = [
     price: 6.9,
     category: "Mains",
     image: "/meals/vegan-karri.png",
-    requiresSides: true,
-    requiresSalad: true,
     tags: ["Vegan", "Spiced"],
   },
   {
