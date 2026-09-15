@@ -36,7 +36,14 @@ export async function fetchInventory(date: string): Promise<InventoryResponse> {
   if (!webhookUrl) throw new Error("SHEETS_WEBHOOK_URL is not configured");
   const url = new URL(webhookUrl);
   url.searchParams.set("date", date);
-  const res = await fetch(url.toString(), { method: "GET" });
+  // Cache-buster: Apps Script sits behind Google's edge, and Next's Data Cache
+  // will otherwise pin this GET forever on Vercel. Combined with cache:"no-store".
+  url.searchParams.set("_t", Date.now().toString());
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    cache: "no-store",
+    next: { revalidate: 0 },
+  });
   if (!res.ok) {
     throw new Error(`Sheets inventory responded ${res.status}`);
   }
