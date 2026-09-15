@@ -11,7 +11,7 @@ import {
   salads,
   sides,
   mealName,
-  mealDescription,
+  mealSubtitle,
   mealCategoryLabel,
   sideLabel,
   saladLabel,
@@ -22,7 +22,15 @@ import { useCart } from "@/context/CartContext";
 import { useToast } from "@/context/ToastContext";
 import { useT } from "@/context/LanguageContext";
 
-export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
+export function FoodCard({
+  meal,
+  index = 0,
+  soldOut = false,
+}: {
+  meal: Meal;
+  index?: number;
+  soldOut?: boolean;
+}) {
   const { add } = useCart();
   const { showToast } = useToast();
   const { t, locale } = useT();
@@ -36,8 +44,10 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
   const sideUpcharge = sides.find((s) => s.id === sideId)?.upcharge ?? 0;
   const currentPrice = meal.price + (needsCombo ? sideUpcharge : 0);
   const localizedName = mealName(meal, locale);
+  const subtitle = mealSubtitle(meal, locale);
 
   const handleAdd = () => {
+    if (soldOut) return;
     if (needsCombo) {
       add(meal, { sideId, saladId });
     } else {
@@ -53,7 +63,10 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.04, ease: "easeOut" }}
-      className="group relative flex flex-col overflow-hidden rounded-3xl bg-surface-light shadow-soft transition-shadow duration-300 hover:shadow-pop dark:bg-elevated-dark"
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-3xl bg-surface-light shadow-soft transition-shadow duration-300 hover:shadow-pop dark:bg-elevated-dark",
+        soldOut && "opacity-80",
+      )}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-cream-100 dark:bg-white/[0.04]">
         <Image
@@ -61,8 +74,18 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
           alt={localizedName}
           fill
           sizes="(min-width: 768px) 33vw, 100vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          className={cn(
+            "object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
+            soldOut && "grayscale",
+          )}
         />
+        {soldOut && (
+          <div className="absolute inset-0 grid place-items-center bg-black/45">
+            <span className="rounded-full bg-white/95 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-ink shadow-pop">
+              {t("food.soldOut")}
+            </span>
+          </div>
+        )}
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <div className="flex flex-wrap gap-1.5">
             {meal.featured && <Badge tone="ink">{t("food.onMenu")}</Badge>}
@@ -92,9 +115,9 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
             {formatPrice(meal.price)}
           </span>
         </div>
-        <p className="line-clamp-2 text-sm text-ink-muted dark:text-cream/60">
-          {mealDescription(meal, locale)}
-        </p>
+        {subtitle && (
+          <p className="text-xs text-ink-muted dark:text-cream/60">{subtitle}</p>
+        )}
 
         {needsCombo ? (
           <div className="mt-3 space-y-3">
@@ -142,14 +165,26 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
             </ComboRow>
             <motion.button
               onClick={handleAdd}
-              whileTap={{ scale: 0.98 }}
+              disabled={soldOut}
+              whileTap={soldOut ? undefined : { scale: 0.98 }}
               animate={pulse ? { scale: [1, 1.03, 1] } : { scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full bg-saffron-500 px-4 py-3 text-sm font-semibold text-white shadow-pop ring-1 ring-saffron-600/40 transition hover:bg-saffron-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-light dark:focus-visible:ring-offset-elevated-dark"
+              className={cn(
+                "mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-pop ring-1 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-light dark:focus-visible:ring-offset-elevated-dark",
+                soldOut
+                  ? "cursor-not-allowed bg-ink-muted/60 ring-transparent"
+                  : "bg-saffron-500 ring-saffron-600/40 hover:bg-saffron-600 focus-visible:ring-saffron-500",
+              )}
               aria-label={t("food.addAria", { name: localizedName })}
             >
-              <Plus className="h-4 w-4" strokeWidth={3} />
-              {t("food.addToCart")} · {formatPrice(currentPrice)}
+              {soldOut ? (
+                t("food.soldOut")
+              ) : (
+                <>
+                  <Plus className="h-4 w-4" strokeWidth={3} />
+                  {t("food.addToCart")} · {formatPrice(currentPrice)}
+                </>
+              )}
             </motion.button>
           </div>
         ) : (
@@ -159,14 +194,26 @@ export function FoodCard({ meal, index = 0 }: { meal: Meal; index?: number }) {
             </span>
             <motion.button
               onClick={handleAdd}
-              whileTap={{ scale: 0.94 }}
+              disabled={soldOut}
+              whileTap={soldOut ? undefined : { scale: 0.94 }}
               animate={pulse ? { scale: [1, 1.08, 1] } : { scale: 1 }}
               transition={{ duration: 0.35 }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-cream shadow-soft transition hover:bg-ink-soft dark:bg-cream dark:text-ink dark:hover:bg-cream-100"
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold shadow-soft transition",
+                soldOut
+                  ? "cursor-not-allowed bg-ink-muted/60 text-cream"
+                  : "bg-ink text-cream hover:bg-ink-soft dark:bg-cream dark:text-ink dark:hover:bg-cream-100",
+              )}
               aria-label={t("food.addAria", { name: localizedName })}
             >
-              <Plus className="h-3.5 w-3.5" strokeWidth={3} />
-              {t("food.add")}
+              {soldOut ? (
+                t("food.soldOut")
+              ) : (
+                <>
+                  <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+                  {t("food.add")}
+                </>
+              )}
             </motion.button>
           </div>
         )}

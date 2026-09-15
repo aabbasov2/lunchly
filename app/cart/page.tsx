@@ -75,6 +75,7 @@ export default function CartPage() {
           total,
           deliveryDate,
           items: lines.map((line) => ({
+            id: line.meal.id,
             name: line.meal.name,
             side: sideNameFor(line.sideId, "en") ?? "",
             salad: saladNameFor(line.saladId, "en") ?? "",
@@ -84,7 +85,15 @@ export default function CartPage() {
         }),
       });
       if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          mealName?: string;
+        };
+        if (res.status === 409 && data.mealName) {
+          showToast(t("cart.soldOutItem", { name: data.mealName }));
+          setSubmitting(false);
+          return;
+        }
         throw new Error(data.error ?? `HTTP ${res.status}`);
       }
       const { url } = (await res.json()) as { url: string };

@@ -5,6 +5,7 @@ import { Providers } from "@/context/Providers";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { FloatingCartButton } from "@/components/FloatingCartButton";
+import { WelcomeGate } from "@/components/WelcomeGate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </main>
             <FloatingCartButton />
             <BottomNav />
+            <WelcomeGate />
           </div>
         </Providers>
       </body>

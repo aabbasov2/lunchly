@@ -17,6 +17,7 @@ interface CompanyContextValue {
   setCompany: (id: string | null) => void;
   companyName: string | null;
   companyDisplay: string | null;
+  hydrated: boolean;
 }
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
@@ -25,7 +26,7 @@ const STORAGE_KEY = "fizuli:company";
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
   const { locale } = useT();
-  const [companyId, setCompanyId] = useState<string | null>("krulli-y");
+  const [companyId, setCompanyId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -56,8 +57,9 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
       setCompany,
       companyName: company?.name ?? null,
       companyDisplay: company ? companyLabel(company, locale) : null,
+      hydrated,
     };
-  }, [companyId, setCompany, locale]);
+  }, [companyId, setCompany, locale, hydrated]);
 
   return <CompanyContext.Provider value={value}>{children}</CompanyContext.Provider>;
 }

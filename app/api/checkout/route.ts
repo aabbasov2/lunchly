@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { describeItems } from "@/lib/sheets";
+import { describeItems, fetchInventory } from "@/lib/sheets";
+import { meals } from "@/data/meals";
 
 interface OrderItem {
+  id: string;
   name: string;
   side: string;
   salad: string;
@@ -45,11 +47,47 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
   }
 
+  const deliveryDate = (payload.deliveryDate ?? "").slice(0, 32);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+    return NextResponse.json({ error: "Missing or invalid deliveryDate" }, { status: 400 });
+  }
+
+  // Aggregate quantities per meal id for inventory check + items_json metadata.
+  const perMeal = new Map<string, number>();
+  for (const it of payload.items) {
+    if (!it.id) {
+      return NextResponse.json({ error: "Item id missing" }, { status: 400 });
+    }
+    perMeal.set(it.id, (perMeal.get(it.id) ?? 0) + it.quantity);
+  }
+
+  // Server-authoritative inventory check: refuse if any capped meal would go over.
+  try {
+    const { sold } = await fetchInventory(deliveryDate);
+    for (const [mealId, qty] of perMeal) {
+      const meal = meals.find((m) => m.id === mealId);
+      if (!meal || meal.dailyLimit === undefined) continue;
+      const remaining = meal.dailyLimit - (sold[mealId] ?? 0);
+      if (qty > remaining) {
+        return NextResponse.json(
+          { error: "Sold out", mealId, mealName: meal.name, remaining: Math.max(0, remaining) },
+          { status: 409 },
+        );
+      }
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: `Inventory check failed: ${message}` }, { status: 502 });
+  }
+
   const stripe = new Stripe(secret);
 
   const origin = request.headers.get("origin") ?? new URL(request.url).origin;
   const orderedAt = new Date().toISOString();
   const orderDescription = describeItems(payload.items);
+  const itemsJson = JSON.stringify(
+    Array.from(perMeal.entries()).map(([id, qty]) => ({ id, qty })),
+  );
 
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = payload.items.map((it) => {
     const combo = [it.side, it.salad].filter(Boolean).join(" · ");
@@ -78,9 +116,10 @@ export async function POST(request: Request) {
         phone,
         company: payload.company ?? "",
         notes: (payload.notes ?? "").slice(0, 500),
-        order: orderDescription,
+        order: orderDescription.slice(0, 500),
         total: String(payload.total),
-        deliveryDate: (payload.deliveryDate ?? "").slice(0, 32),
+        deliveryDate,
+        itemsJson: itemsJson.slice(0, 500),
       },
     });
 

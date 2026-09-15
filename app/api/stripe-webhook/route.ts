@@ -51,6 +51,7 @@ export async function POST(request: Request) {
       notes: md.notes || "",
       total: Number(md.total) || (session.amount_total ?? 0) / 100,
       paid: true,
+      itemsJson: md.itemsJson || "",
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

@@ -19,8 +19,8 @@ export interface Meal {
   id: string;
   name: string;
   name_et?: string;
-  description: string;
-  description_et?: string;
+  subtitle?: string;
+  subtitle_et?: string;
   price: number;
   category: MealCategory;
   image: string;
@@ -29,6 +29,7 @@ export interface Meal {
   tags?: string[];
   chefsPick?: boolean;
   featured?: boolean;
+  dailyLimit?: number;
 }
 
 export const sides: SideOption[] = [
@@ -49,10 +50,6 @@ export const meals: Meal[] = [
     id: "kana-shashlyk",
     name: "Chicken Shashlik",
     name_et: "Kana Šašlõkk",
-    description:
-      "Marinated chicken thigh skewers, flame-kissed and juicy. Served with your choice of side and salad.",
-    description_et:
-      "Marineeritud kanakintsu vardad, otse leekidelt ja mahlased. Kaasas kõrvarooga ja salat sinu valikul.",
     price: 6.9,
     category: "Mains",
     image: "/meals/kana-shashlyk.png",
@@ -66,10 +63,8 @@ export const meals: Meal[] = [
     id: "kodune-kotlett",
     name: "Homestyle Cutlet",
     name_et: "Kodune Kotlett",
-    description:
-      "Homestyle beef-and-pork cutlet, pan-seared and juicy. Comforting and filling.",
-    description_et:
-      "Kodune veise- ja sealiha kotlett, pannil praetud ja mahlane. Lohutav ja täidlane.",
+    subtitle: "Chicken & pork",
+    subtitle_et: "Kana ja sealiha",
     price: 6.9,
     category: "Mains",
     image: "/meals/kodune-kotlett.png",
@@ -77,46 +72,38 @@ export const meals: Meal[] = [
     requiresSalad: true,
     tags: ["Comfort"],
     featured: true,
+    dailyLimit: 25,
   },
   {
     id: "vegan-karri",
     name: "Vegan Curry",
     name_et: "Vegan Karri",
-    description:
-      "Slow-simmered vegan curry with chickpeas, coconut and warm spices.",
-    description_et:
-      "Aeglaselt haudunud vegan karri kikerherneste, kookose ja soojade vürtsidega.",
     price: 6.9,
     category: "Mains",
     image: "/meals/vegan-karri.png",
     tags: ["Vegan", "Spiced"],
+    dailyLimit: 25,
   },
   {
     id: "grill-lohesalat",
     name: "Grilled Salmon Salad",
     name_et: "Grill Lõhesalat",
-    description:
-      "Warm grilled salmon over fresh greens with a lemon dressing.",
-    description_et:
-      "Soe grill-lõhe värsketel salatilehtedel, sidruni-kastme kastega.",
     price: 8.9,
     category: "Mains",
     image: "/meals/grill-lohesalat.png",
     tags: ["Light", "Grill"],
     featured: true,
+    dailyLimit: 10,
   },
   {
     id: "grill-kanafilee-salat",
     name: "Grilled Chicken Salad",
     name_et: "Grill Kanafilee Salat",
-    description:
-      "Grilled chicken fillet over crisp romaine, tomato and cucumber.",
-    description_et:
-      "Grillitud kanafilee krõbedal salatil, tomati ja kurgiga.",
     price: 6.9,
     category: "Mains",
     image: "/meals/grill-kanafilee-salat.png",
     tags: ["Light", "Grill"],
+    dailyLimit: 25,
   },
 ];
 
@@ -126,8 +113,9 @@ export function mealName(meal: Meal, locale: Locale): string {
   return locale === "et" && meal.name_et ? meal.name_et : meal.name;
 }
 
-export function mealDescription(meal: Meal, locale: Locale): string {
-  return locale === "et" && meal.description_et ? meal.description_et : meal.description;
+export function mealSubtitle(meal: Meal, locale: Locale): string | undefined {
+  if (locale === "et" && meal.subtitle_et) return meal.subtitle_et;
+  return meal.subtitle;
 }
 
 export function sideLabel(side: SideOption, locale: Locale): string {
