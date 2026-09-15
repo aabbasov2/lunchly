@@ -86,7 +86,8 @@
     "favAdd": "Add to favorites",
     "favRemove": "Remove from favorites",
     "addAria": "Add {name} to cart",
-    "soldOut": "Sold out"
+    "soldOut": "Sold out",
+    "leftBadge": "{n} left"
   },
   "cart": {
     "emptyTitle": "Your lunch awaits.",
@@ -120,6 +121,13 @@
     "fillRequired": "Please fill in the required fields",
     "checkoutFailed": "Checkout failed: {message}",
     "soldOutItem": "Sold out for that day: {name}. Please remove it and try again.",
+    "soldOutLine": "Sold out",
+    "leftBadge": "{n} left",
+    "overLimitBadge": "Only {n} left — reduce",
+    "conflictBannerTitle": "Some items need attention",
+    "conflictBannerLine": "{name}: only {n} left, you have {have}.",
+    "conflictSoldOutLine": "{name} is sold out for that day.",
+    "fixCartToContinue": "Adjust cart to continue",
     "deliveryOn": "Delivery",
     "deliveryWindow": "Delivery window · 12:00 – 12:30",
     "orderBy": "Confirm order by",

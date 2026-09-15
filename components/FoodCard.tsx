@@ -26,10 +26,12 @@ export function FoodCard({
   meal,
   index = 0,
   soldOut = false,
+  remaining = null,
 }: {
   meal: Meal;
   index?: number;
   soldOut?: boolean;
+  remaining?: number | null;
 }) {
   const { add } = useCart();
   const { showToast } = useToast();
@@ -90,6 +92,9 @@ export function FoodCard({
           <div className="flex flex-wrap gap-1.5">
             {meal.featured && <Badge tone="ink">{t("food.onMenu")}</Badge>}
             {meal.chefsPick && <Badge tone="saffron">{t("food.chefsPick")}</Badge>}
+            {!soldOut && remaining !== null && remaining > 0 && remaining < 10 && (
+              <Badge tone="saffron">{t("food.leftBadge", { n: remaining })}</Badge>
+            )}
           </div>
           <button
             onClick={() => setFavorite((f) => !f)}

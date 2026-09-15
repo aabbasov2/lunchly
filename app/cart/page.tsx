@@ -9,7 +9,9 @@ import { useCart } from "@/context/CartContext";
 import { useCompany } from "@/context/CompanyContext";
 import { useToast } from "@/context/ToastContext";
 import { useT } from "@/context/LanguageContext";
+import { useInventory } from "@/context/InventoryContext";
 import { Button } from "@/components/ui/Button";
+import { AlertTriangle } from "lucide-react";
 import { mealName, sideNameFor, saladNameFor } from "@/data/meals";
 import { formatPrice, cn } from "@/lib/format";
 import {
@@ -30,6 +32,34 @@ export default function CartPage() {
   const { companyName, companyDisplay } = useCompany();
   const { showToast } = useToast();
   const { t, locale } = useT();
+  const { remainingFor, isSoldOut, isLowStock, refresh } = useInventory();
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const totalByMeal = new Map<string, number>();
+  for (const line of lines) {
+    totalByMeal.set(line.meal.id, (totalByMeal.get(line.meal.id) ?? 0) + line.quantity);
+  }
+  const perMealStatus = new Map<
+    string,
+    { soldOut: boolean; overLimit: boolean; lowStock: boolean; remaining: number | null; have: number }
+  >();
+  for (const [mealId, have] of totalByMeal) {
+    const remaining = remainingFor(mealId);
+    perMealStatus.set(mealId, {
+      soldOut: isSoldOut(mealId),
+      overLimit: remaining !== null && have > remaining,
+      lowStock: isLowStock(mealId),
+      remaining,
+      have,
+    });
+  }
+  const conflicts = Array.from(perMealStatus.entries()).filter(
+    ([, s]) => s.soldOut || s.overLimit,
+  );
+  const hasConflict = conflicts.length > 0;
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -148,6 +178,46 @@ export default function CartPage() {
           </p>
         </div>
 
+        {hasConflict && (
+          <div
+            role="alert"
+            className="mb-4 rounded-3xl border border-saffron-500/40 bg-saffron-500/10 p-4 text-sm dark:border-saffron-500/50 dark:bg-saffron-500/[0.08]"
+          >
+            <div className="flex items-start gap-3">
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-saffron-500 text-white">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-saffron-700 dark:text-saffron-100">
+                  {t("cart.conflictBannerTitle")}
+                </p>
+                <ul className="mt-1 space-y-1 text-xs text-saffron-700/90 dark:text-saffron-100/90">
+                  {conflicts.map(([mealId, s]) => {
+                    const line = lines.find((l) => l.meal.id === mealId);
+                    const name = line ? mealName(line.meal, locale) : mealId;
+                    if (s.soldOut) {
+                      return (
+                        <li key={mealId}>
+                          {t("cart.conflictSoldOutLine", { name })}
+                        </li>
+                      );
+                    }
+                    return (
+                      <li key={mealId}>
+                        {t("cart.conflictBannerLine", {
+                          name,
+                          n: s.remaining ?? 0,
+                          have: s.have,
+                        })}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         <ul className="space-y-3">
           <AnimatePresence initial={false}>
             {lines.map((line) => {
@@ -155,6 +225,15 @@ export default function CartPage() {
               const salad = saladNameFor(line.saladId, locale);
               const combo = [side, salad].filter(Boolean).join(" · ");
               const lineName = mealName(line.meal, locale);
+              const status = perMealStatus.get(line.meal.id);
+              const lineSoldOut = status?.soldOut ?? false;
+              const lineOverLimit = status?.overLimit ?? false;
+              const lineLowStock = status?.lowStock ?? false;
+              const lineRemaining = status?.remaining ?? null;
+              const disableIncrement =
+                lineSoldOut ||
+                lineOverLimit ||
+                (lineRemaining !== null && (status?.have ?? 0) >= lineRemaining);
               return (
                 <motion.li
                   key={line.id}
@@ -163,7 +242,11 @@ export default function CartPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20, height: 0, marginBottom: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="flex items-center gap-4 rounded-3xl bg-surface-light p-3 shadow-soft dark:bg-elevated-dark"
+                  className={cn(
+                    "flex items-center gap-4 rounded-3xl bg-surface-light p-3 shadow-soft dark:bg-elevated-dark",
+                    (lineSoldOut || lineOverLimit) &&
+                      "ring-1 ring-saffron-500/40 dark:ring-saffron-500/50",
+                  )}
                 >
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
                     <Image
@@ -171,7 +254,7 @@ export default function CartPage() {
                       alt={lineName}
                       fill
                       sizes="80px"
-                      className="object-cover"
+                      className={cn("object-cover", lineSoldOut && "grayscale")}
                     />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -195,6 +278,23 @@ export default function CartPage() {
                     <p className="text-xs text-ink-muted dark:text-cream/60">
                       {formatPrice(line.unitPrice)} {t("cart.each")}
                     </p>
+                    {(lineSoldOut || lineOverLimit || lineLowStock) && (
+                      <div className="mt-1.5">
+                        {lineSoldOut ? (
+                          <span className="inline-flex items-center rounded-full bg-saffron-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-saffron-600 dark:text-saffron-200">
+                            {t("cart.soldOutLine")}
+                          </span>
+                        ) : lineOverLimit && lineRemaining !== null ? (
+                          <span className="inline-flex items-center rounded-full bg-saffron-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-saffron-600 dark:text-saffron-200">
+                            {t("cart.overLimitBadge", { n: lineRemaining })}
+                          </span>
+                        ) : lineLowStock && lineRemaining !== null ? (
+                          <span className="inline-flex items-center rounded-full bg-saffron-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-saffron-600 dark:bg-saffron-500/15 dark:text-saffron-200">
+                            {t("cart.leftBadge", { n: lineRemaining })}
+                          </span>
+                        ) : null}
+                      </div>
+                    )}
                     <div className="mt-2 flex items-center justify-between">
                       <div className="flex items-center gap-1 rounded-full bg-black/[0.04] p-1 dark:bg-white/[0.06]">
                         <button
@@ -209,7 +309,13 @@ export default function CartPage() {
                         </span>
                         <button
                           onClick={() => increment(line.id)}
-                          className="grid h-7 w-7 place-items-center rounded-full text-ink transition hover:bg-white dark:text-cream dark:hover:bg-white/[0.08]"
+                          disabled={disableIncrement}
+                          className={cn(
+                            "grid h-7 w-7 place-items-center rounded-full text-ink transition dark:text-cream",
+                            disableIncrement
+                              ? "cursor-not-allowed opacity-40"
+                              : "hover:bg-white dark:hover:bg-white/[0.08]",
+                          )}
                           aria-label={t("cart.incAria")}
                         >
                           <Plus className="h-3.5 w-3.5" />
@@ -336,8 +442,17 @@ export default function CartPage() {
           </span>
         </div>
 
-        <Button fullWidth size="lg" onClick={handleCheckout} disabled={submitting}>
-          {submitting ? t("cart.redirecting") : t("cart.payButton", { total: formatPrice(total) })}
+        <Button
+          fullWidth
+          size="lg"
+          onClick={handleCheckout}
+          disabled={submitting || hasConflict}
+        >
+          {submitting
+            ? t("cart.redirecting")
+            : hasConflict
+              ? t("cart.fixCartToContinue")
+              : t("cart.payButton", { total: formatPrice(total) })}
         </Button>
 
         <div className="flex items-center gap-2 text-xs text-ink-muted dark:text-cream/60">

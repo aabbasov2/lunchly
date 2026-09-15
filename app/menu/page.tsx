@@ -16,57 +16,27 @@ import { FoodCardSkeleton } from "@/components/ui/Skeleton";
 import { PromoBanner } from "@/components/PromoBanner";
 import { CountdownBanner } from "@/components/CountdownBanner";
 import { useT } from "@/context/LanguageContext";
+import { useInventory } from "@/context/InventoryContext";
 import { cn } from "@/lib/format";
-import { getCutoffInfo } from "@/lib/cutoff";
 
 type CategoryFilter = "All" | MealCategory;
 
-function ymd(d: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-
 export default function MenuPage() {
   const { t, locale } = useT();
+  const { remainingFor, isSoldOut, isLowStock } = useInventory();
   const [category, setCategory] = useState<CategoryFilter>("All");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [sold, setSold] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 650);
     return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      const info = getCutoffInfo();
-      const date = ymd(info.deliveryDate);
-      try {
-        const res = await fetch(`/api/inventory?date=${date}`, { cache: "no-store" });
-        if (!res.ok) return;
-        const data = (await res.json()) as { sold?: Record<string, number> };
-        if (!cancelled) setSold(data.sold ?? {});
-      } catch {
-        /* ignore — degrade to no sold-out badges */
-      }
-    };
-    load();
-    const id = setInterval(load, 60_000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, []);
-
-  const isSoldOut = (mealId: string, limit: number | undefined): boolean => {
-    if (!limit) return false;
-    return (sold[mealId] ?? 0) >= limit;
-  };
-
   const chefsPick = useMemo(() => meals.find((m) => m.chefsPick), []);
-  const chefsPickSoldOut = chefsPick ? isSoldOut(chefsPick.id, chefsPick.dailyLimit) : false;
+  const chefsPickSoldOut = chefsPick ? isSoldOut(chefsPick.id) : false;
+  const chefsPickLowStock = chefsPick ? isLowStock(chefsPick.id) : false;
+  const chefsPickRemaining = chefsPick ? remainingFor(chefsPick.id) : null;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -157,13 +127,18 @@ export default function MenuPage() {
                     {mealSubtitle(chefsPick, locale)}
                   </p>
                 )}
-                <div className="mt-4 flex items-center gap-3">
+                <div className="mt-4 flex flex-wrap items-center gap-3">
                   <span className="text-lg font-semibold text-ink dark:text-cream">
                     {t("menu.fromPrice", { price: chefsPick.price.toFixed(2) })}
                   </span>
                   <span className="text-xs uppercase tracking-wider text-ink-muted dark:text-cream/60">
                     {chefsPickSoldOut ? t("food.soldOut") : t("menu.comboHint")}
                   </span>
+                  {!chefsPickSoldOut && chefsPickLowStock && chefsPickRemaining !== null && (
+                    <span className="inline-flex items-center rounded-full bg-saffron-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-saffron-600 dark:text-saffron-200">
+                      {t("food.leftBadge", { n: chefsPickRemaining })}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="relative aspect-[5/4] overflow-hidden rounded-2xl">
@@ -203,7 +178,13 @@ export default function MenuPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             {filtered.map((m, i) => (
-              <FoodCard key={m.id} meal={m} index={i} soldOut={isSoldOut(m.id, m.dailyLimit)} />
+              <FoodCard
+                key={m.id}
+                meal={m}
+                index={i}
+                soldOut={isSoldOut(m.id)}
+                remaining={remainingFor(m.id)}
+              />
             ))}
           </div>
         )}

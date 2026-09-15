@@ -86,7 +86,8 @@
     "favAdd": "Lisa lemmikutesse",
     "favRemove": "Eemalda lemmikutest",
     "addAria": "Lisa {name} ostukorvi",
-    "soldOut": "Otsas"
+    "soldOut": "Otsas",
+    "leftBadge": "{n} järel"
   },
   "cart": {
     "emptyTitle": "Sinu lõuna ootab.",
@@ -120,6 +121,13 @@
     "fillRequired": "Palun täida kohustuslikud väljad",
     "checkoutFailed": "Makse ebaõnnestus: {message}",
     "soldOutItem": "Sel päeval otsas: {name}. Palun eemalda see ja proovi uuesti.",
+    "soldOutLine": "Otsas",
+    "leftBadge": "{n} järel",
+    "overLimitBadge": "Ainult {n} järel — vähenda",
+    "conflictBannerTitle": "Mõned tooted vajavad tähelepanu",
+    "conflictBannerLine": "{name}: ainult {n} järel, sinu ostukorvis {have}.",
+    "conflictSoldOutLine": "{name} on sel päeval otsas.",
+    "fixCartToContinue": "Kohanda ostukorvi, et jätkata",
     "deliveryOn": "Kohaletoimetamine",
     "deliveryWindow": "Kohaletoimetamise aken · 12:00 – 12:30",
     "orderBy": "Kinnita tellimus",
